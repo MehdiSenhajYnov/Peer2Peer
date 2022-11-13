@@ -70,7 +70,7 @@ namespace TcpPeer2Peer
                 }
             } else
             {
-                System.Threading.Thread.Sleep(750);
+                System.Threading.Thread.Sleep(50);
                 HolePunching();
             }
             //
