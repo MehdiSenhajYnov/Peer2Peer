@@ -72,6 +72,16 @@ namespace TcpPeer2Peer
                 client.Connect(peerEndPoint);
                 Console.WriteLine("Connected to peer");
 
+                
+
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
+            if (client.Connected)
+            {
                 new Thread(() => 
                 {
                     Thread.CurrentThread.IsBackground = true; 
@@ -84,15 +94,6 @@ namespace TcpPeer2Peer
                 byte[] buffer = Encoding.ASCII.GetBytes("hello");
                 //Console.WriteLine("Sent To Server : " + text);
                 client.Client.Send(buffer, 0, buffer.Length, SocketFlags.None);
-
-            }
-            catch (Exception ex)
-            {
-                
-            }
-
-            if (client.Connected)
-            {
                 Console.WriteLine("Connected");
                 while (true)
                 {
