@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace TcpPeer2Peer
 {
@@ -40,23 +39,6 @@ namespace TcpPeer2Peer
             Console.WriteLine("Client connected");
         }
 
-
-        public static void ReceiveResponse()
-        {
-            var buffer = new byte[2048];
-            int received = client.Client.Receive(buffer, SocketFlags.None);
-            if (received == 0)
-            {
-                return;
-            }
-
-            var data = new byte[received];
-            Array.Copy(buffer, data, received);
-
-            Console.WriteLine("Received From Server : " + Encoding.ASCII.GetString(data));
-
-        }
-
         public static void HolePunching()
         {
 
@@ -71,9 +53,6 @@ namespace TcpPeer2Peer
             {
                 client.Connect(peerEndPoint);
                 Console.WriteLine("Connected to peer");
-
-                
-
             }
             catch (Exception ex)
             {
@@ -82,21 +61,6 @@ namespace TcpPeer2Peer
 
             if (client.Connected)
             {
-                
-                new Thread(() => 
-                {
-                    Thread.CurrentThread.IsBackground = true; 
-                    while (true)
-                    {
-                        ReceiveResponse();
-                    }
-                }).Start();
-
-                byte[] buffer = Encoding.ASCII.GetBytes("hello");
-                //Console.WriteLine("Sent To Server : " + text);
-                client.Client.Send(buffer, 0, buffer.Length, SocketFlags.None);
-
-                
                 Console.WriteLine("Connected");
                 while (true)
                 {
