@@ -52,7 +52,7 @@ namespace TcpPeer2Peer
             if (!client.Connected) {
                 try 
                 {
-                    client.ConnectAsync(peerEndPoint);
+                    client.Connect(peerEndPoint);
                 }
                 catch (Exception e)
                 {
