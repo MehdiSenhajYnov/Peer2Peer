@@ -17,7 +17,7 @@ namespace TcpPeer2Peer
             _ipAddress = File.ReadAllText("ip.txt");
 
             Console.WriteLine("Starting Peer ...");
-            
+            HolePunching();
         }
 
         public static async void HolePunching()
