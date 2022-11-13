@@ -22,7 +22,6 @@ namespace TcpPeer2Peer
             ipLocalEndPoint = new IPEndPoint(IPAddress.Any, 7777);
 
             client = new TcpClient(ipLocalEndPoint);
-            client.Client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             /*
             listener = new TcpListener(ipLocalEndPoint);
 
