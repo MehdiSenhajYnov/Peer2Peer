@@ -30,7 +30,7 @@ namespace TcpPeer2Peer
             listener.BeginAcceptTcpClient(OnClientConnect, null);
             */
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
-
+            client.Client.BeginAccept(OnClientConnect, null);
             Console.WriteLine("Starting Peer ...");
             HolePunching();
         }
