@@ -28,19 +28,19 @@ namespace TcpPeer2Peer
             HolePunching();
         }
 
-        public static void HolePunching()
+        public async static void HolePunching()
         {
 
             if (peerEndPoint == null)
             {
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
             }
-            
+
             Console.WriteLine("Trying to connect to: " + _ipAddress);
             
             try 
             {
-                client.Connect(peerEndPoint);
+                await client.ConnectAsync(peerEndPoint);
                 Console.WriteLine("Connected to peer");
             }
             catch (Exception ex)
