@@ -31,7 +31,7 @@ namespace TcpPeer2Peer
             */
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
             
-            client.Client.Bind(ipLocalEndPoint);
+            client.Client.Bind(new IPEndPoint(IPAddress.Any, 7777));
             client.Client.Listen(5);
             client.Client.BeginAccept(OnClientConnect, null);
             Console.WriteLine("Starting Peer ...");
