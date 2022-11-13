@@ -21,6 +21,7 @@ namespace TcpPeer2Peer
             IPAddress myipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
             ipLocalEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7777);
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            client.Bind(ipLocalEndPoint);
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
             Console.WriteLine("Starting Peer ...");
@@ -29,11 +30,6 @@ namespace TcpPeer2Peer
 
         public static void HolePunching()
         {
-            if (client == null)
-            {
-                ipLocalEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
-                client = new TcpClient(ipLocalEndPoint);
-            }
 
             if (peerEndPoint == null)
             {
