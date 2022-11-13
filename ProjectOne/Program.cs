@@ -53,7 +53,6 @@ namespace TcpPeer2Peer
                 try 
                 {
                     client.ConnectAsync(peerEndPoint);
-                    Console.WriteLine("Connected to peer");
                 }
                 catch (Exception e)
                 {
