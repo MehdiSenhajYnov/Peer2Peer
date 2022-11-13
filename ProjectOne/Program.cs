@@ -8,7 +8,9 @@ namespace TcpPeer2Peer
     class Peer
     {
         public static string _ipAddress = String.Empty;
-        public static TcpClient client = new TcpClient();
+        public static IPEndPoint? ipLocalEndPoint;
+        public static TcpClient? client;
+        public static IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
         public static void Main(string[] args)
         {
@@ -16,15 +18,25 @@ namespace TcpPeer2Peer
             // other side public ip (home pc) = "176.150.133.69"
             _ipAddress = File.ReadAllText("ip.txt");
 
+            ipLocalEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+            client = new TcpClient(ipLocalEndPoint);
+
             Console.WriteLine("Starting Peer ...");
             HolePunching();
         }
 
-        public static async void HolePunching()
+        public static void HolePunching()
         {
+            if (client == null)
+            {
+                ipLocalEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+                client = new TcpClient(ipLocalEndPoint);
+            }
+
+
+            client.Connect(new IPEndPoint(IPAddress.Parse(_ipAddress), 7777));
             Console.WriteLine("Trying to connect to: " + _ipAddress);
-            
-            await client.ConnectAsync(new IPEndPoint(IPAddress.Parse(_ipAddress), 7777));
+
             if (client.Connected)
             {
                 Console.WriteLine("Connected");
