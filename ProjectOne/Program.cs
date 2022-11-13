@@ -8,13 +8,16 @@ namespace TcpPeer2Peer
     {
         public static void Main(string[] args)
         {
-           
+            Console.WriteLine("Starting Peer ...");
+            // my public ip = "77.205.68.255"
+            // other side public ip = "176.150.133.69"
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(IPAddress.Parse("77.205.68.255"), 7777));
+            socket.Bind(new IPEndPoint(IPAddress.Parse("176.150.133.69"), 7777));
 
             while (true)
             {
-                if (socket.Connected) {
+                if (socket.Connected)
+                {
                     Console.WriteLine("Connected");
                 }
             }
