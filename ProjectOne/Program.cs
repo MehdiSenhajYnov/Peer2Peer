@@ -11,12 +11,13 @@ namespace TcpPeer2Peer
             Console.WriteLine("Starting Peer ...");
             // my public ip (portable pc) = "77.205.68.255"
             // other side public ip (home pc) = "176.150.133.69"
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(IPAddress.Parse("176.150.133.69"), 7777));
+            TcpClient client = new TcpClient();
 
+            client.Connect(new IPEndPoint(IPAddress.Parse("77.205.68.255"), 7777));
+            
             while (true)
             {
-                if (socket.Connected)
+                if (client.Connected)
                 {
                     Console.WriteLine("Connected");
                 }
