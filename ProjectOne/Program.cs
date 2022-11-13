@@ -22,10 +22,17 @@ namespace TcpPeer2Peer
             ipLocalEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7777);
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             client.Bind(ipLocalEndPoint);
+            client.Listen(5);
+            client.BeginAccept(OnClientConnect, null);
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
             Console.WriteLine("Starting Peer ...");
             HolePunching();
+        }
+
+        public static void OnClientConnect(IAsyncResult ar)
+        {
+            Console.WriteLine("Client connected");
         }
 
         public static void HolePunching()
@@ -47,7 +54,6 @@ namespace TcpPeer2Peer
             {
                 
             }
-
 
             if (client.Connected)
             {
