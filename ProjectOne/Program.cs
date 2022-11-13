@@ -10,7 +10,7 @@ namespace TcpPeer2Peer
         public static string _ipAddress = String.Empty;
         public static IPEndPoint? ipLocalEndPoint;
         public static TcpClient? client;
-        public static IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+        public static IPEndPoint? peerEndPoint;
 
         public static void Main(string[] args)
         {
@@ -20,6 +20,7 @@ namespace TcpPeer2Peer
 
             ipLocalEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
             client = new TcpClient(ipLocalEndPoint);
+            peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
             Console.WriteLine("Starting Peer ...");
             HolePunching();
@@ -33,8 +34,11 @@ namespace TcpPeer2Peer
                 client = new TcpClient(ipLocalEndPoint);
             }
 
-
-            client.Connect(new IPEndPoint(IPAddress.Parse(_ipAddress), 7777));
+            if (peerEndPoint == null)
+            {
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+            }
+            client.Connect(peerEndPoint);
             Console.WriteLine("Trying to connect to: " + _ipAddress);
 
             if (client.Connected)
