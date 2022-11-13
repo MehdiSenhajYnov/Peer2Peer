@@ -52,7 +52,7 @@ namespace TcpPeer2Peer
             if (!client.Connected) {
                 try 
                 {
-                    client.Connect(peerEndPoint);
+                    client.ConnectAsync(peerEndPoint);
                 }
                 catch (Exception e)
                 {
@@ -70,7 +70,7 @@ namespace TcpPeer2Peer
                 }
             } else
             {
-                System.Threading.Thread.Sleep(250);
+                System.Threading.Thread.Sleep(750);
                 HolePunching();
             }
             //
