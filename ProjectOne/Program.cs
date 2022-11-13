@@ -9,7 +9,7 @@ namespace TcpPeer2Peer
     {
         public static string _ipAddress = String.Empty;
         public static IPEndPoint? ipLocalEndPoint;
-        public static TcpClient? client;
+        public static Socket? client;
         public static IPEndPoint? peerEndPoint;
 
         public static void Main(string[] args)
@@ -20,7 +20,7 @@ namespace TcpPeer2Peer
 
             IPAddress myipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
             ipLocalEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7777);
-            client = new TcpClient(ipLocalEndPoint);
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
             Console.WriteLine("Starting Peer ...");
