@@ -35,8 +35,19 @@ namespace TcpPeer2Peer
             {
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
             }
-            client.Connect(peerEndPoint);
+            
             Console.WriteLine("Trying to connect to: " + _ipAddress);
+            
+            try 
+            {
+                client.Connect(peerEndPoint);
+                Console.WriteLine("Connected to peer");
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
 
             if (client.Connected)
             {
