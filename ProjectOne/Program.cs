@@ -68,7 +68,7 @@ namespace TcpPeer2Peer
                 }
             } else
             {
-                System.Threading.Thread.Sleep(500);
+                //System.Threading.Thread.Sleep(500);
                 HolePunching();
             }
             //
