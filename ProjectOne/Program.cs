@@ -49,14 +49,17 @@ namespace TcpPeer2Peer
             
             Console.WriteLine("Trying to connect to: " + _ipAddress);
             
-            try 
-            {
-                client.ConnectAsync(peerEndPoint);
-                Console.WriteLine("Connected to peer");
-            }
-            catch (Exception ex)
-            {
-                
+            if (!client.Connected) {
+                try 
+                {
+                    client.ConnectAsync(peerEndPoint);
+                    Console.WriteLine("Connected to peer");
+                }
+                catch (Exception e)
+                {
+                }
+            } else {
+                Console.WriteLine("Already connected");
             }
 
             if (client.Connected)
