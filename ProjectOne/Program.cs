@@ -18,7 +18,8 @@ namespace TcpPeer2Peer
             // other side public ip (home pc) = "176.150.133.69"
             _ipAddress = File.ReadAllText("ip.txt");
 
-            ipLocalEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+            IPAddress ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
+            ipLocalEndPoint = new IPEndPoint(ipAddress, 7777);
             client = new TcpClient(ipLocalEndPoint);
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
 
