@@ -82,18 +82,7 @@ namespace TcpPeer2Peer
 
             if (client.Connected)
             {
-                new Thread(() => 
-                {
-                    Thread.CurrentThread.IsBackground = true; 
-                    while (true)
-                    {
-                        ReceiveResponse();
-                    }
-                }).Start();
-
-                byte[] buffer = Encoding.ASCII.GetBytes("hello");
-                //Console.WriteLine("Sent To Server : " + text);
-                client.Client.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                
                 Console.WriteLine("Connected");
                 while (true)
                 {
