@@ -11,27 +11,22 @@ namespace TcpPeer2Peer
         public static Socket? client;
         //public static TcpListener? listener;
         public static IPEndPoint? peerEndPoint;
-        public const int myPort = 8888;
-        public const int EndPort = 8080; 
+        
+        public static int MyPort;
+        public static int EndPort;
 
         public static void Start()
         {
-            // my public ip (portable pc) = "77.205.68.255"
-            // other side public ip (home pc) = "176.150.133.69"
+            MyPort = Int32.Parse(File.ReadAllText("myport.txt"));
+            EndPort = Int32.Parse(File.ReadAllText("endport.txt"));
+            
+
             _ipAddress = File.ReadAllText("ip.txt");
 
-            ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+            ipLocalEndPoint = new IPEndPoint(IPAddress.Any, MyPort);
 
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            client.Bind(ipLocalEndPoint);
-            client.Listen(5);
-            client.BeginAccept(AcceptCallback, null);
-            /*
-            listener = new TcpListener(ipLocalEndPoint);
 
-            listener.Start();
-            listener.BeginAcceptTcpClient(OnClientConnect, null);
-            */
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
 
             Console.WriteLine("Starting Peer ...");
@@ -53,10 +48,10 @@ namespace TcpPeer2Peer
 
             if (peerEndPoint == null)
             {
-                peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
             }
             
-            Console.WriteLine("Trying to connect to: " + _ipAddress);
+            Console.WriteLine("Trying to connect to: " + _ipAddress + " on port: " + EndPort);
             
             if (!client.Connected) {
                 try 
