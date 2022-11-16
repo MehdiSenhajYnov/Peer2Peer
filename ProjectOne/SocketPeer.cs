@@ -26,8 +26,6 @@ namespace TcpPeer2Peer
             ipLocalEndPoint = new IPEndPoint(IPAddress.Any, MyPort);
 
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            client.Bind(ipLocalEndPoint);
-            client.Listen();
 
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
 
@@ -59,7 +57,7 @@ namespace TcpPeer2Peer
             if (!client.Connected) {
                 try 
                 {
-                    await client.ConnectAsync(peerEndPoint);
+                    client.Bind(peerEndPoint);
                 }
                 catch (Exception e)
                 {
