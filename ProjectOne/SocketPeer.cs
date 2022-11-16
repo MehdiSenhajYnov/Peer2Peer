@@ -26,8 +26,11 @@ namespace TcpPeer2Peer
             ipLocalEndPoint = new IPEndPoint(IPAddress.Any, MyPort);
 
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            client.Bind(ipLocalEndPoint);
+            client.Listen();
 
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
+
 
             Console.WriteLine("Starting Peer ...");
             HolePunching();
