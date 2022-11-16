@@ -46,7 +46,7 @@ namespace TcpPeer2Peer
             Console.WriteLine("Client connected");
         }
 
-        public static void HolePunching()
+        public static async void HolePunching()
         {
 
             if (peerEndPoint == null)
@@ -59,7 +59,7 @@ namespace TcpPeer2Peer
             if (!client.Connected) {
                 try 
                 {
-                    client.Connect(peerEndPoint);
+                    await client.ConnectAsync(peerEndPoint);
                 }
                 catch (Exception e)
                 {
