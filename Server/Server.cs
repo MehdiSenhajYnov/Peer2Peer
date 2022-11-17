@@ -50,7 +50,7 @@ namespace TcpPeer2Peer
             {
                 socket = serverSocket.EndAccept(AR);
                 clientSockets.Add(socket);
-                if (clientSockets.Count() >= 1){
+                if (clientSockets.Count() >= 2){
                     byte[] IPPlyrOne = Encoding.ASCII.GetBytes(clientSockets[0].RemoteEndPoint.ToString());
                     byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(clientSockets[1].RemoteEndPoint.ToString());
                     clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
