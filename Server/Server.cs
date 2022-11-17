@@ -85,11 +85,11 @@ namespace TcpPeer2Peer
             byte[] Data = new byte[received];
             Array.Copy(buffer, Data, received);
 
-            Console.Write("Received Data " + Data[0] + " from " + current.RemoteEndPoint);
-
-            Console.Write("\n");
 
             string text = Encoding.ASCII.GetString(Data);
+            Console.Write("Received Data : " + text + " from " + current.RemoteEndPoint);
+
+            Console.Write("\n");
 
             if (text.StartsWith("NewUserConnected"))
             {
