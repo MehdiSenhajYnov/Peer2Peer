@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace TcpPeer2Peer
 {
@@ -14,6 +15,13 @@ namespace TcpPeer2Peer
         public const int myPort = 8888;
         public const int EndPort = 8080; 
         public const int MainServerPort = 8888;
+
+
+        public static string IpAddressEndPoint = String.Empty;
+        public static int PortEndPoint = 0;
+        public static IPEndPoint? otherPeerEndPoint;
+
+
         public static void Start()
         {
             // my public ip (portable pc) = "77.205.68.255"
@@ -36,18 +44,75 @@ namespace TcpPeer2Peer
             if (client.Connected) {
                 Console.WriteLine("Connected to Main Server");
             }
-            // Get a client stream for reading and writing. 
-            NetworkStream stream = client.GetStream();
-
-            // Buffer to store the response bytes.
+            NetworkStream stream;
             Byte[] data = new Byte[256];
-
-            // String to store the response ASCII representation.
             String responseData = String.Empty;
+            Int32 bytes;
 
-            // Read the first batch of the TcpServer response bytes.
-            Int32 bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
+            //Socket peer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            while (true)
+            {
+                // Get a client stream for reading and writing. 
+                stream = client.GetStream();
+                // Read the first batch of the TcpServer response bytes.
+                bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
+                // Buffer to store the response bytes.
+                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
+                Console.WriteLine("Received: " + responseData);
+                if (responseData.Contains(":")) {
+                    break;
+                }
+                Thread.Sleep(250);
+
+            }
+            
+            IpAddressEndPoint = responseData.Split(":")[0];
+            PortEndPoint = Int32.Parse(responseData.Split(":")[1]);
+            otherPeerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
+            client.Client.SendTo(Encoding.ASCII.GetBytes("Hello"), otherPeerEndPoint);
+
+            new Thread(() => 
+            {
+                Thread.CurrentThread.IsBackground = true; 
+                while (true)
+                {
+                    ListenMessage();
+                }
+            }).Start();
+
+            string newMessage = String.Empty;
+            while (true)
+            {
+                newMessage = Console.ReadLine();
+                if (!String.IsNullOrEmpty(newMessage)) {
+                    if (newMessage == "exit") {
+                        break;
+                    }
+                    client.Client.SendTo(Encoding.ASCII.GetBytes(newMessage), otherPeerEndPoint);
+                }
+            }
+        }
+
+        public static void ListenMessage() {
+
+            NetworkStream stream;
+            Byte[] data = new Byte[256];
+            String responseData = String.Empty;
+            Int32 bytes;
+
+            while (true)
+            {
+                // Get a client stream for reading and writing. 
+                stream = client.GetStream();
+                // Read the first batch of the TcpServer response bytes.
+                bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
+                // Buffer to store the response bytes.
+                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
+                Console.WriteLine("Received: " + responseData);
+                Thread.Sleep(250);
+
+            }
         }
 
         public static void OnClientConnect(IAsyncResult ar)
