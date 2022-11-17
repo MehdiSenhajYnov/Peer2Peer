@@ -33,7 +33,9 @@ namespace TcpPeer2Peer
         public static void ConnectToMainServer()
         {
             client.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
-
+            if (client.Connected) {
+                Console.WriteLine("Connected to Main Server");
+            }
             // Get a client stream for reading and writing. 
             NetworkStream stream = client.GetStream();
 

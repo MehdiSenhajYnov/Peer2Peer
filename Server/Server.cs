@@ -49,6 +49,7 @@ namespace TcpPeer2Peer
             try
             {
                 socket = serverSocket.EndAccept(AR);
+                Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
                 clientSockets.Add(socket);
                 if (clientSockets.Count() >= 2){
                     byte[] IPPlyrOne = Encoding.ASCII.GetBytes(clientSockets[0].RemoteEndPoint.ToString());
@@ -64,7 +65,6 @@ namespace TcpPeer2Peer
             }
 
             socket.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, socket);
-            Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
             serverSocket.BeginAccept(AcceptCallback, null);
             
         }

@@ -9,6 +9,7 @@ namespace TcpPeer2Peer
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Starting Peer ...");
             TcpClientPeer.Start();
             while (true)
             {
