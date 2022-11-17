@@ -46,15 +46,15 @@ namespace TcpPeer2Peer
         {
             Socket socket;
 
-            clientSockets.Add(socket);
             try
             {
                 socket = serverSocket.EndAccept(AR);
+                clientSockets.Add(socket);
                 if (clientSockets.Count() >= 1){
-                    byte[] IPPlyrOne = Encoding.ASCII.GetBytes(server.clientSockets[0].RemoteEndPoint.ToString());
-                    byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(server.clientSockets[1].RemoteEndPoint.ToString());
-                    clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, server.clientSockets[0].LocalEndPoint);
-                    clientSockets[1].SendTo(IPPlyrOne, 0, IPPlyrOne.Length, SocketFlags.None, server.clientSockets[1].LocalEndPoint);
+                    byte[] IPPlyrOne = Encoding.ASCII.GetBytes(clientSockets[0].RemoteEndPoint.ToString());
+                    byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(clientSockets[1].RemoteEndPoint.ToString());
+                    clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
+                    clientSockets[1].SendTo(IPPlyrOne, 0, IPPlyrOne.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
                     return;
                 }
             }
