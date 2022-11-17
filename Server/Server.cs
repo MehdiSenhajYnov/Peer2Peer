@@ -10,7 +10,7 @@ namespace TcpPeer2Peer
     public class Server
     {
         public const int BufferSize = 2048;
-        public const int Port = 7777;
+        public const int Port = 8888;
         public readonly List<Socket> clientSockets = new List<Socket>();
         public readonly byte[] buffer = new byte[BufferSize];
         //public readonly List<Player> players = new List<Player>();
