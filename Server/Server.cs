@@ -56,7 +56,7 @@ namespace TcpPeer2Peer
                     byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(clientSockets[1].RemoteEndPoint.ToString());
                     clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
                     clientSockets[1].SendTo(IPPlyrOne, 0, IPPlyrOne.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
-                    Console.WriteLine(IPPlyrOne + " " + IPPlyrTwo);
+                    Console.WriteLine(Encoding.ASCII.GetString(IPPlyrOne) + " " + Encoding.ASCII.GetString(IPPlyrTwo));
                     return;
                 }
             }
