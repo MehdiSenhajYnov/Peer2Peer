@@ -11,6 +11,10 @@ namespace TcpPeer2Peer
         {
             Server server = new Server();
             server.SetupServer();
+            while (true)
+            {
+                
+            }
         } 
     }
 }
