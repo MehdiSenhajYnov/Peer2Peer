@@ -13,7 +13,7 @@ namespace TcpPeer2Peer
         public static IPEndPoint? peerEndPoint;
         public const int myPort = 8888;
         public const int EndPort = 8080; 
-
+        public const int MainServerPort = 8888;
         public static void Start()
         {
             // my public ip (portable pc) = "77.205.68.255"
@@ -22,17 +22,30 @@ namespace TcpPeer2Peer
 
             client = new TcpClient();
 
-
-
+            ConnectToMainServer();
+            /*
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
 
             Console.WriteLine("Starting Peer ...");
-            HolePunching();
+            HolePunching();*/
         }
 
-        public void ConnectToMainServer()
+        public static void ConnectToMainServer()
         {
-            client.Connect(IPAddress.Parse("127.0.0.1"), EndPort);
+            client.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
+
+            // Get a client stream for reading and writing. 
+            NetworkStream stream = client.GetStream();
+
+            // Buffer to store the response bytes.
+            Byte[] data = new Byte[256];
+
+            // String to store the response ASCII representation.
+            String responseData = String.Empty;
+
+            // Read the first batch of the TcpServer response bytes.
+            Int32 bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
         }
 
         public static void OnClientConnect(IAsyncResult ar)
