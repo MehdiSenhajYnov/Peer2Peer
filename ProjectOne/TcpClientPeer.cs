@@ -20,19 +20,19 @@ namespace TcpPeer2Peer
             // other side public ip (home pc) = "176.150.133.69"
             _ipAddress = File.ReadAllText("ip.txt");
 
-            ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+            client = new TcpClient();
 
-            client = new TcpClient(ipLocalEndPoint);
-            /*
-            listener = new TcpListener(ipLocalEndPoint);
 
-            listener.Start();
-            listener.BeginAcceptTcpClient(OnClientConnect, null);
-            */
+
             peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), EndPort);
 
             Console.WriteLine("Starting Peer ...");
             HolePunching();
+        }
+
+        public void ConnectToMainServer()
+        {
+            client.Connect(IPAddress.Parse("127.0.0.1"), EndPort);
         }
 
         public static void OnClientConnect(IAsyncResult ar)
