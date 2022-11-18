@@ -9,7 +9,7 @@ namespace TcpPeer2Peer
     public class TcpClientPeer {
         public static string _ipAddress = String.Empty;
         public static IPEndPoint? ipLocalEndPoint;
-        public static TcpClient? client;
+        public static Socket? client;
         //public static TcpListener? listener;
         public static IPEndPoint? peerEndPoint;
         public static int myPort;
@@ -24,8 +24,8 @@ namespace TcpPeer2Peer
         {
             // my public ip (portable pc) = "77.205.68.255"
             // other side public ip (home pc) = "176.150.133.69"
-            var ipLocalEndPoint = new IPEndPoint(IPAddress.Any, 8888);
-            client = new TcpClient(ipLocalEndPoint);
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
 
             ConnectToMainServer();
             /*
@@ -37,41 +37,21 @@ namespace TcpPeer2Peer
 
         public static void ConnectToMainServer()
         {
+            //client.Bind(new IPEndPoint(IPAddress.Any, 8888));
             client.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
             if (client.Connected) {
                 Console.WriteLine("Connected to Main Server");
             }
-            client.Client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
-            NetworkStream stream;
-            Byte[] data = new Byte[256];
-            String responseData = String.Empty;
-            Int32 bytes;
+            client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
 
 
-            while (true)
-            {
-                // Get a client stream for reading and writing. 
-                stream = client.GetStream();
-                // Read the first batch of the TcpServer response bytes.
-                bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
-                // Buffer to store the response bytes.
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
-                Console.WriteLine("Received: " + responseData);
-                if (responseData.Contains(":")) {
-                    break;
-                }
-                Thread.Sleep(250);
+            RequestLoop();
 
-            }
-
-            client.Close();
-
-            IpAddressEndPoint = responseData.Split(":")[0];
-            string Ports = responseData.Split(":")[1];
-            PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
-            myPort = Int32.Parse(responseData.Split("\n")[1]);
+            client.Disconnect(true);
+            
             peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-            client = new TcpClient(ipLocalEndPoint);
+            ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+            client.Bind(new IPEndPoint(IPAddress.Any, myPort));
             HolePunching();
 
 
@@ -86,25 +66,49 @@ namespace TcpPeer2Peer
 
         }
 
-        public static void ListenMessage() {
-
-            NetworkStream stream;
-            Byte[] data = new Byte[256];
-            String responseData = String.Empty;
-            Int32 bytes;
-
-            while (true)
+        public static void RequestLoop()
+        {
+            
+            new Thread(() => 
             {
-                // Get a client stream for reading and writing. 
-                stream = client.GetStream();
-                // Read the first batch of the TcpServer response bytes.
-                bytes = stream.Read(data, 0, data.Length); //(**This receives the data using the byte method**)
-                // Buffer to store the response bytes.
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes); //(**This converts it to string**)
-                Console.WriteLine("Received: " + responseData);
-                Thread.Sleep(250);
+                Thread.CurrentThread.IsBackground = true; 
+                while (client != null && client.Connected)
+                {
+                    ReceiveResponse();
+                }
+            }).Start();
 
+
+            
+        }
+
+
+        public static void ReceiveResponse()
+        {
+            var buffer = new byte[2048];
+            int received = client.Receive(buffer, SocketFlags.None);
+            if (received == 0)
+            {
+                return;
             }
+
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+
+            /*foreach (var bytou in data)
+            {
+                Console.Write(bytou + " ");
+            }*/
+            string responseData = Encoding.ASCII.GetString(data);
+            Console.Write(responseData);
+            if (responseData.Contains(":")) {
+                IpAddressEndPoint = responseData.Split(":")[0];
+                string Ports = responseData.Split(":")[1];
+                PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
+                myPort = Int32.Parse(responseData.Split("\n")[1]);
+            }
+            // Nom du joueur adveresaire
+
         }
 
         public static void OnClientConnect(IAsyncResult ar)
@@ -120,7 +124,7 @@ namespace TcpPeer2Peer
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
             }
             
-            Console.WriteLine("Trying to connect to: " + IpAddressEndPoint);
+            Console.WriteLine("Trying to connect to: " + IpAddressEndPoint + ":" + PortEndPoint);
             
             if (!client.Connected) {
                 try 
@@ -137,6 +141,7 @@ namespace TcpPeer2Peer
             if (client.Connected)
             {
                 Console.WriteLine("Connected");
+                RequestLoop();
                 while (true)
                 {
                     

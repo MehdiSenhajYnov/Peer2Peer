@@ -85,7 +85,10 @@ namespace TcpPeer2Peer
                 clientSockets.Remove(current);
                 return;
             }
-
+            if (received <= 2)
+            {
+                return;
+            }
             byte[] Data = new byte[received];
             Array.Copy(buffer, Data, received);
 
@@ -99,8 +102,6 @@ namespace TcpPeer2Peer
             {
                 string newuser = text.Replace("newuser:", string.Empty);
                 int nb = 1;
-                SendByte(new byte[]{(byte)nb,3,4});
-
                 //SendString("WHAT IS YOUR NAME PLAYER " + (nb == 1 ? "ONE ?" : "TWO ?"));
                 Console.WriteLine($"New Client has joined the game ID : {nb}");
             }
