@@ -5,11 +5,11 @@ using System.Net.Sockets;
 
 namespace TcpPeer2Peer
 {
-    class Peer
+    class Program
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Starting Peer ...");
+            Console.WriteLine("Starting ...");
             TcpClientPeer.Start();
             while (true)
             {

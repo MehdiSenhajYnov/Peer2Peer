@@ -47,13 +47,11 @@ namespace TcpPeer2Peer
 
             RequestLoop();
 
-            client.Disconnect(true);
             
-            peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-            ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
-            client.Bind(new IPEndPoint(IPAddress.Any, myPort));
+
+            /*client.Bind(new IPEndPoint(IPAddress.Any, myPort));
             client.Listen();
-            HolePunching();
+            HolePunching();*/
 
 
             // new Thread(() => 
@@ -87,7 +85,16 @@ namespace TcpPeer2Peer
         public static void ReceiveResponse()
         {
             var buffer = new byte[2048];
-            int received = client.Receive(buffer, SocketFlags.None);
+            int received;
+            try
+            {
+                received = client.Receive(buffer, SocketFlags.None);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("Error On receive Skipped");
+                return;
+            }
             if (received == 0)
             {
                 return;
@@ -101,12 +108,33 @@ namespace TcpPeer2Peer
                 Console.Write(bytou + " ");
             }*/
             string responseData = Encoding.ASCII.GetString(data);
-            Console.Write(responseData);
+            Console.WriteLine("received : " + responseData);
             if (responseData.Contains(":")) {
                 IpAddressEndPoint = responseData.Split(":")[0];
                 string Ports = responseData.Split(":")[1];
                 PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
                 myPort = Int32.Parse(responseData.Split("\n")[1]);
+                Console.WriteLine("Ip to Connect : " + IpAddressEndPoint);
+                Console.WriteLine("Port to Connect : " + PortEndPoint);
+                Console.WriteLine("My Port : " + myPort);
+                
+                client.Close();
+                Console.WriteLine("Starting Peer ...");
+                
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
+                ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+
+                Peer peer = new Peer(ipLocalEndPoint, peerEndPoint, false);
+                peer.Run();
+                while (true)
+                {
+                    string newMessage = Console.ReadLine();
+                    if (!String.IsNullOrEmpty(newMessage))
+                    {
+                        peer.SendString(newMessage);
+                    }
+                    
+                }
             }
             // Nom du joueur adveresaire
 

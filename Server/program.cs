@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace TcpPeer2Peer
+namespace TcpPeer2PeerServer
 {
     class Peer
     {

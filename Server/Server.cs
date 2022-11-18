@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace TcpPeer2Peer
+namespace TcpPeer2PeerServer
 {
 
     public class Server
