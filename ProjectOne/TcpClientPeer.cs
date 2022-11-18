@@ -12,23 +12,20 @@ namespace TcpPeer2Peer
         public static TcpClient? client;
         //public static TcpListener? listener;
         public static IPEndPoint? peerEndPoint;
-        public const int myPort = 8888;
-        public const int EndPort = 8080; 
+        public static int myPort;
         public const int MainServerPort = 8888;
 
 
         public static string IpAddressEndPoint = String.Empty;
         public static int PortEndPoint = 0;
-        public static IPEndPoint? otherPeerEndPoint;
 
 
         public static void Start()
         {
             // my public ip (portable pc) = "77.205.68.255"
             // other side public ip (home pc) = "176.150.133.69"
-            _ipAddress = File.ReadAllText("ip.txt");
-
-            client = new TcpClient();
+            var ipLocalEndPoint = new IPEndPoint(IPAddress.Any, 8888);
+            client = new TcpClient(ipLocalEndPoint);
 
             ConnectToMainServer();
             /*
@@ -50,7 +47,6 @@ namespace TcpPeer2Peer
             String responseData = String.Empty;
             Int32 bytes;
 
-            Socket peer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             while (true)
             {
@@ -67,32 +63,27 @@ namespace TcpPeer2Peer
                 Thread.Sleep(250);
 
             }
-            IpAddressEndPoint = responseData.Split(":")[0];
-            PortEndPoint = Int32.Parse(responseData.Split(":")[1]);
-            otherPeerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-            peer.Connect(otherPeerEndPoint);
-            peer.SendTo(Encoding.ASCII.GetBytes("Hello"), otherPeerEndPoint);
-            
-            new Thread(() => 
-            {
-                Thread.CurrentThread.IsBackground = true; 
-                while (true)
-                {
-                    ListenMessage();
-                }
-            }).Start();
 
-            string newMessage = String.Empty;
-            while (true)
-            {
-                newMessage = Console.ReadLine();
-                if (!String.IsNullOrEmpty(newMessage)) {
-                    if (newMessage == "exit") {
-                        break;
-                    }
-                    client.Client.SendTo(Encoding.ASCII.GetBytes(newMessage), otherPeerEndPoint);
-                }
-            }
+            client.Close();
+
+            IpAddressEndPoint = responseData.Split(":")[0];
+            string Ports = responseData.Split(":")[1];
+            PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
+            myPort = Int32.Parse(responseData.Split("\n")[1]);
+            peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
+            client = new TcpClient(ipLocalEndPoint);
+            HolePunching();
+
+
+            // new Thread(() => 
+            // {
+            //     Thread.CurrentThread.IsBackground = true; 
+            //     while (true)
+            //     {
+            //         ListenMessage();
+            //     }
+            // }).Start();
+
         }
 
         public static void ListenMessage() {
@@ -126,10 +117,10 @@ namespace TcpPeer2Peer
 
             if (peerEndPoint == null)
             {
-                peerEndPoint = new IPEndPoint(IPAddress.Parse(_ipAddress), 7777);
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
             }
             
-            Console.WriteLine("Trying to connect to: " + _ipAddress);
+            Console.WriteLine("Trying to connect to: " + IpAddressEndPoint);
             
             if (!client.Connected) {
                 try 
