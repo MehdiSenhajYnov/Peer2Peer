@@ -44,12 +44,13 @@ namespace TcpPeer2Peer
             if (client.Connected) {
                 Console.WriteLine("Connected to Main Server");
             }
+            client.Client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
             NetworkStream stream;
             Byte[] data = new Byte[256];
             String responseData = String.Empty;
             Int32 bytes;
 
-            //Socket peer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Socket peer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             while (true)
             {
@@ -66,12 +67,12 @@ namespace TcpPeer2Peer
                 Thread.Sleep(250);
 
             }
-            
             IpAddressEndPoint = responseData.Split(":")[0];
             PortEndPoint = Int32.Parse(responseData.Split(":")[1]);
             otherPeerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-            client.Client.SendTo(Encoding.ASCII.GetBytes("Hello"), otherPeerEndPoint);
-
+            peer.Connect(otherPeerEndPoint);
+            peer.SendTo(Encoding.ASCII.GetBytes("Hello"), otherPeerEndPoint);
+            
             new Thread(() => 
             {
                 Thread.CurrentThread.IsBackground = true; 
