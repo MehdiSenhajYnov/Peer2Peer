@@ -1,0 +1,29 @@
+ncat -u -l 50001
+
+echo "punched trough" | ncat -u -p 50002 77.205.68.255 50001
+echo "punched trough" | ncat -u -p 50001 77.205.68.255 50002
+
+
+
+
+
+
+
+ncat -t -l 50001
+echo "punched trough" | ncat -t -p 50001 77.205.68.255 50002
+echo "punched trough" | ncat -t -p 50002 77.205.68.255 50001
+
+
+
+host-a$ ncat -p 8080 176.150.133.69 8888
+
+
+
+host-b$ ncat -p 8888 176.150.133.69 8080
+
+AZURE CONNECT SSH : ssh -i d:\Download\PeerToPeerPc_key.pem mehdi@20.13.17.73
+AZURE PUBLIC IP : 20.13.17.73
+
+ncat -p 8080 176.150.133.69 8888
+ncat -p 8888 20.13.17.73 8080
+

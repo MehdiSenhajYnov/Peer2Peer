@@ -52,6 +52,7 @@ namespace TcpPeer2Peer
             peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
             ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
             client.Bind(new IPEndPoint(IPAddress.Any, myPort));
+            client.Listen();
             HolePunching();
 
 
