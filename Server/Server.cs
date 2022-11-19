@@ -51,7 +51,8 @@ namespace TcpPeer2PeerServer
             try
             {
                 socket = serverSocket.EndAccept(AR);
-                if (ipWaited != string.Empty) 
+                Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
+                if (String.IsNullOrEmpty(ipWaited)) 
                 {
                     Console.WriteLine("IP waited: " + ipWaited + " IP connected: " + socket.RemoteEndPoint.ToString().Split(":")[0]);
                     if (socket.RemoteEndPoint.ToString().Split(":")[0] == ipWaited)
@@ -63,7 +64,6 @@ namespace TcpPeer2PeerServer
                         return;
                     }
                 }
-                Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
                 clientSockets.Add(socket);
                 if (clientSockets.Count() >= 2){
                     // tell to the client to open a new TCP connection
