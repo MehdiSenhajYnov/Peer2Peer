@@ -14,7 +14,7 @@ namespace TcpPeer2PeerServer
         bool useParallelAlgorithm;
         public HolePunching(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, bool useParallelAlgorithm)
         {
-            this.localEndPoint = localEndPoint;
+            this.localEndPoint = new IPEndPoint(IPAddress.Parse("LOCAL_IP"), 1234);
             this.remoteEndPoint = remoteEndPoint;
             this.useParallelAlgorithm = useParallelAlgorithm;
         }
