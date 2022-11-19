@@ -115,31 +115,10 @@ namespace TcpPeer2Peer
                 tcpClient.Connect(MainServerEndPoint);
                 if (tcpClient.Connected) {
                     Console.WriteLine("TCPNEW connected");
+                    PeerRequestLoop();
                 }
             }
-            if (responseData.StartsWith("TRYCONNECT:")) {
-                string InfoToConnect = responseData.Replace("TRYCONNECT:", "");
-                IpAddressEndPoint = InfoToConnect.Split(":")[0];
-                string Ports = InfoToConnect.Split(":")[1];
-                PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
-                myPort = Int32.Parse(Ports.Split("\n")[1]);
-                Console.WriteLine("Ip : " + IpAddressEndPoint + " Port : " + PortEndPoint + " MyPort : " + myPort);
-                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-                ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
-                
-                tcpClient.Close();
-                tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                tcpClient.Bind(ipLocalEndPoint);
 
-                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
-                {
-                    Console.WriteLine("TRYCONNECT teminated");
-                    tcpClient.Listen();
-                    tcpClient.BeginAccept(OnClientConnect, tcpClient);
-                    client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
-
-                }
-            }
             if (responseData.StartsWith("ConnectTo:"))
             {
                 string InfoToConnect = responseData.Replace("ConnectTo:", "");
@@ -163,35 +142,79 @@ namespace TcpPeer2Peer
 
             }
 
-            /*if (responseData.Contains(":")) {
-                IpAddressEndPoint = responseData.Split(":")[0];
-                string Ports = responseData.Split(":")[1];
+        }
+
+        public static void PeerRequestLoop()
+        {
+            
+            new Thread(() => 
+            {
+                Thread.CurrentThread.IsBackground = true; 
+                while (client != null && client.Connected)
+                {
+                    PeerReceiveResponse();
+                }
+            }).Start();
+
+
+            
+        }
+
+
+        public static void PeerReceiveResponse()
+        {
+            var buffer = new byte[2048];
+            int received;
+            try
+            {
+                received = tcpClient.Receive(buffer, SocketFlags.None);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("Error On receive Skipped");
+                return;
+            }
+            if (received == 0)
+            {
+                return;
+            }
+
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+
+            /*foreach (var bytou in data)
+            {
+                Console.Write(bytou + " ");
+            }*/
+            string responseData = Encoding.ASCII.GetString(data);
+            Console.WriteLine("received : " + responseData);
+
+            if (responseData.StartsWith("TRYCONNECT:")) {
+                string InfoToConnect = responseData.Replace("TRYCONNECT:", "");
+                IpAddressEndPoint = InfoToConnect.Split(":")[0];
+                string Ports = InfoToConnect.Split(":")[1];
                 PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
-                myPort = Int32.Parse(responseData.Split("\n")[1]);
-                Console.WriteLine("Ip to Connect : " + IpAddressEndPoint);
-                Console.WriteLine("Port to Connect : " + PortEndPoint);
-                Console.WriteLine("My Port : " + myPort);
-                
-                client.Close();
-                Console.WriteLine("Starting Peer ...");
-                
+                myPort = Int32.Parse(Ports.Split("\n")[1]);
+                Console.WriteLine("Ip : " + IpAddressEndPoint + " Port : " + PortEndPoint + " MyPort : " + myPort);
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
                 ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+                
+                tcpClient.Close();
+                tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                tcpClient.Bind(ipLocalEndPoint);
 
-                HolePunching();
-                while (true)
+                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
                 {
-                    string newMessage = Console.ReadLine();
-                    if (!String.IsNullOrEmpty(newMessage))
-                    {
+                    Console.WriteLine("TRYCONNECT teminated");
+                    tcpClient.Listen();
+                    tcpClient.BeginAccept(OnClientConnect, tcpClient);
+                    client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
 
-                    }
-                    
                 }
-            }*/
-
+            }
 
         }
+
 
         public static void OnClientConnect(IAsyncResult ar)
         {
