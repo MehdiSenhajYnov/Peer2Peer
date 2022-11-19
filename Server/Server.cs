@@ -25,7 +25,7 @@ namespace TcpPeer2PeerServer
             Console.WriteLine("Setting up server...");
             serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, Port));
-            serverSocket.Listen(5);
+            serverSocket.Listen();
             serverSocket.BeginAccept(AcceptCallback, null);
             Console.WriteLine("Server setup complete");
             Console.WriteLine("Listening on port: " + Port);
@@ -47,7 +47,7 @@ namespace TcpPeer2PeerServer
         public void AcceptCallback(IAsyncResult AR)
         {
             Socket socket;
-            Console.WriteLine("Accepting callback");
+
             try
             {
                 socket = serverSocket.EndAccept(AR);
@@ -61,6 +61,8 @@ namespace TcpPeer2PeerServer
                         endpointToGive = socket.RemoteEndPoint.ToString();
                         byte[] messageByte = Encoding.ASCII.GetBytes("TRYCONNECT:" + clientSockets[0].RemoteEndPoint.ToString());
                         Console.WriteLine("Sending TRYCONNECT message to client");
+                        socket.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, socket);
+                        serverSocket.BeginAccept(AcceptCallback, null);
                         return;
                     }
                 }
