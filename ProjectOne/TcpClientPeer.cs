@@ -202,17 +202,21 @@ namespace TcpPeer2Peer
                 tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 tcpClient.Bind(ipLocalEndPoint);
 
-                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
+                try
                 {
-                    Console.WriteLine("TRYCONNECT teminated");
-                    tcpClient.Close();
-                    tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    tcpClient.Bind(ipLocalEndPoint);
-                    tcpClient.Listen(5);
-                    tcpClient.BeginAccept(OnClientConnect, tcpClient);
-                    client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
-
+                    tcpClient.ConnectAsync(peerEndPoint).Wait(2200);
                 }
+                catch (System.Exception)
+                {
+                }
+
+                Console.WriteLine("TRYCONNECT teminated");
+                tcpClient.Close();
+                tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                tcpClient.Bind(ipLocalEndPoint);
+                tcpClient.Listen(5);
+                tcpClient.BeginAccept(OnClientConnect, tcpClient);
+                client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
             }
 
         }
