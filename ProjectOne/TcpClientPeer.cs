@@ -171,7 +171,6 @@ namespace TcpPeer2Peer
             }
             catch (SocketException e)
             {
-                Console.WriteLine("Error On receive Skipped");
                 return;
             }
             if (received == 0)
@@ -206,7 +205,10 @@ namespace TcpPeer2Peer
                 if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
                 {
                     Console.WriteLine("TRYCONNECT teminated");
-                    tcpClient.Listen();
+                    tcpClient.Close();
+                    tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    tcpClient.Bind(ipLocalEndPoint);
+                    tcpClient.Listen(5);
                     tcpClient.BeginAccept(OnClientConnect, tcpClient);
                     client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
 
