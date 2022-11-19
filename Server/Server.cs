@@ -55,9 +55,10 @@ namespace TcpPeer2PeerServer
                 {
                     if (socket.RemoteEndPoint.ToString().Split(":")[0] == ipWaited)
                     {
+                        Console.WriteLine("Waited Client Connected");
                         endpointToGive = socket.RemoteEndPoint.ToString();
                         byte[] messageByte = Encoding.ASCII.GetBytes("TRYCONNECT:" + clientSockets[0].RemoteEndPoint.ToString());
-
+                        Console.WriteLine("Sending TRYCONNECT message to client");
                         return;
                     }
                 }
@@ -119,6 +120,7 @@ namespace TcpPeer2PeerServer
             {
                 var DataToSend = Encoding.ASCII.GetBytes("ConnectTo:" + endpointToGive);
                 clientSockets[0].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
+                Console.WriteLine("Sending ConnectTo message to client");
             }
 
             current.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, current);

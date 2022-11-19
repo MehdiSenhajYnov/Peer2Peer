@@ -121,7 +121,7 @@ namespace TcpPeer2Peer
                 string Ports = InfoToConnect.Split(":")[1];
                 PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
                 myPort = Int32.Parse(Ports.Split("\n")[1]);
-
+                Console.WriteLine("Ip : " + IpAddressEndPoint + " Port : " + PortEndPoint + " MyPort : " + myPort);
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
                 ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
                 
@@ -131,6 +131,7 @@ namespace TcpPeer2Peer
 
                 if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
                 {
+                    Console.WriteLine("TRYCONNECT teminated");
                     tcpClient.Listen();
                     tcpClient.BeginAccept(OnClientConnect, tcpClient);
                     client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
