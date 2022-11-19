@@ -67,7 +67,7 @@ namespace TcpPeer2PeerServer
 
             socket.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, socket);
             serverSocket.BeginAccept(AcceptCallback, null);
-            HolePunching.Run();
+            HolePunching.Run(serverSocket.RemoteEndPoint);
         }
 
         public void ReceiveCallback(IAsyncResult AR)

@@ -13,14 +13,14 @@ namespace TcpPeer2PeerServer
         IPEndPoint remoteEndPoint;
         bool useParallelAlgorithm;
 
-        public static void Run()
+        public static void Run(EndPoint newRemoteEndPoint)
         {
             var ipHostEntry = Dns.GetHostEntry("REMOTE_HOST");
 
             new HolePunching()
             {
                 localEndPoint = new IPEndPoint(IPAddress.Parse("LOCAL_IP"), 1234),
-                remoteEndPoint = new IPEndPoint(ipHostEntry.AddressList.First().Address, 1235),
+                remoteEndPoint = (IPEndPoint)newRemoteEndPoint,
                 useParallelAlgorithm = true,
             }.RunImpl();
         }
