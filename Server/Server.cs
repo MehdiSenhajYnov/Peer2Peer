@@ -59,6 +59,8 @@ namespace TcpPeer2PeerServer
                     Console.WriteLine(Encoding.ASCII.GetString(IPPlyrOne) + " " + Encoding.ASCII.GetString(IPPlyrTwo));
                     return;
                 }
+                HolePunching hp = new HolePunching(socket.RemoteEndPoint.ToString(), false);
+                hp.Run();
             }
             catch (ObjectDisposedException) // I cannot seem to avoid this (on exit when properly closing sockets)
             {
@@ -67,8 +69,6 @@ namespace TcpPeer2PeerServer
 
             socket.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, socket);
             serverSocket.BeginAccept(AcceptCallback, null);
-            HolePunching hp = new HolePunching(serverSocket.RemoteEndPoint.ToString(), false);
-            hp.Run();
         }
 
         public void ReceiveCallback(IAsyncResult AR)
