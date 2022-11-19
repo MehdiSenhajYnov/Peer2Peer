@@ -79,7 +79,6 @@ namespace TcpPeer2PeerServer
                     clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
                     clientSockets[1].SendTo(IPPlyrOne, 0, IPPlyrOne.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
                     Console.WriteLine(Encoding.ASCII.GetString(IPPlyrOne) + " " + Encoding.ASCII.GetString(IPPlyrTwo));*/
-                    return;
                 }
             }
             catch (ObjectDisposedException) // I cannot seem to avoid this (on exit when properly closing sockets)
