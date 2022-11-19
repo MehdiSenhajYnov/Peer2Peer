@@ -18,6 +18,7 @@ namespace TcpPeer2Peer
 
         public static string IpAddressEndPoint = String.Empty;
         public static int PortEndPoint = 0;
+        static Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
 
         public static void Start()
@@ -109,7 +110,57 @@ namespace TcpPeer2Peer
             }*/
             string responseData = Encoding.ASCII.GetString(data);
             Console.WriteLine("received : " + responseData);
-            if (responseData.Contains(":")) {
+            if (responseData == "TCPNEW")
+            {
+                tcpClient.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
+
+            }
+            if (responseData.StartsWith("TRYCONNECT:")) {
+                string InfoToConnect = responseData.Replace("TRYCONNECT:", "");
+                IpAddressEndPoint = InfoToConnect.Split(":")[0];
+                string Ports = InfoToConnect.Split(":")[1];
+                PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
+                myPort = Int32.Parse(Ports.Split("\n")[1]);
+
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
+                ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+                
+                tcpClient.Close();
+                tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                tcpClient.Bind(ipLocalEndPoint);
+
+                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
+                {
+                    tcpClient.Listen();
+                    tcpClient.BeginAccept(OnClientConnect, tcpClient);
+                    client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
+
+                }
+            }
+            if (responseData.StartsWith("ConnectTo:"))
+            {
+                string InfoToConnect = responseData.Replace("ConnectTo:", "");
+                IpAddressEndPoint = InfoToConnect.Split(":")[0];
+                string Ports = InfoToConnect.Split(":")[1];
+                PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
+                myPort = Int32.Parse(Ports.Split("\n")[1]);
+
+                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
+                ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
+
+                client.Close();
+                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                client.Bind(ipLocalEndPoint);
+                client.Connect(peerEndPoint);
+                if (client.Connected) {
+                    Console.WriteLine("Connected to other peer");
+                    client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
+
+                }
+
+            }
+
+            /*if (responseData.Contains(":")) {
                 IpAddressEndPoint = responseData.Split(":")[0];
                 string Ports = responseData.Split(":")[1];
                 PortEndPoint = Int32.Parse(Ports.Split("\n")[0]);
@@ -134,8 +185,8 @@ namespace TcpPeer2Peer
                     }
                     
                 }
-            }
-            // Nom du joueur adveresaire
+            }*/
+
 
         }
 

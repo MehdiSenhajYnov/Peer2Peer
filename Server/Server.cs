@@ -19,7 +19,7 @@ namespace TcpPeer2PeerServer
         public byte[] actionsCode = new byte[1];
         //public int dataSent;
 
-
+        public string endpointToGive = String.Empty;
         public void SetupServer()
         {
             Console.WriteLine("Setting up server...");
@@ -42,6 +42,8 @@ namespace TcpPeer2PeerServer
             serverSocket.Close();
         }
 
+        string ipWaited = string.Empty;
+
         public void AcceptCallback(IAsyncResult AR)
         {
             Socket socket;
@@ -49,18 +51,32 @@ namespace TcpPeer2PeerServer
             try
             {
                 socket = serverSocket.EndAccept(AR);
+                if (ipWaited != string.Empty) 
+                {
+                    if (socket.RemoteEndPoint.ToString().Split(":")[0] == ipWaited)
+                    {
+                        endpointToGive = socket.RemoteEndPoint.ToString();
+                        byte[] messageByte = Encoding.ASCII.GetBytes("TRYCONNECT:" + clientSockets[0].RemoteEndPoint.ToString());
+
+                        return;
+                    }
+                }
                 Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
                 clientSockets.Add(socket);
                 if (clientSockets.Count() >= 2){
+                    // tell to the client to open a new TCP connection
+                    byte[] messageByte = Encoding.ASCII.GetBytes("TCPNEW");
+                    clientSockets[1].SendTo(messageByte, 0, messageByte.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
+                    ipWaited = string.Format("{0}", socket.RemoteEndPoint.ToString()).Split(':')[0];
+
+                    /*
                     byte[] IPPlyrOne = Encoding.ASCII.GetBytes(clientSockets[0].RemoteEndPoint.ToString() + "\n" + clientSockets[1].RemoteEndPoint.ToString().Split(':')[1]);
                     byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(clientSockets[1].RemoteEndPoint.ToString() + "\n" + clientSockets[0].RemoteEndPoint.ToString().Split(':')[1]);
                     clientSockets[0].SendTo(IPPlyrTwo, 0, IPPlyrTwo.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
                     clientSockets[1].SendTo(IPPlyrOne, 0, IPPlyrOne.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
-                    Console.WriteLine(Encoding.ASCII.GetString(IPPlyrOne) + " " + Encoding.ASCII.GetString(IPPlyrTwo));
+                    Console.WriteLine(Encoding.ASCII.GetString(IPPlyrOne) + " " + Encoding.ASCII.GetString(IPPlyrTwo));*/
                     return;
                 }
-                HolePunching hp = new HolePunching(socket.RemoteEndPoint.ToString(), false);
-                hp.Run();
             }
             catch (ObjectDisposedException) // I cannot seem to avoid this (on exit when properly closing sockets)
             {
@@ -99,12 +115,10 @@ namespace TcpPeer2PeerServer
 
             Console.Write("\n");
 
-            if (text.StartsWith("NewUserConnected"))
+            if (text.StartsWith("TRYTOCONNECTEND"))
             {
-                string newuser = text.Replace("newuser:", string.Empty);
-                int nb = 1;
-                //SendString("WHAT IS YOUR NAME PLAYER " + (nb == 1 ? "ONE ?" : "TWO ?"));
-                Console.WriteLine($"New Client has joined the game ID : {nb}");
+                var DataToSend = Encoding.ASCII.GetBytes("ConnectTo:" + endpointToGive);
+                clientSockets[0].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
             }
 
             current.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, current);
