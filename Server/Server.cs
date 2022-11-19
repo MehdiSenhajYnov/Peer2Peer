@@ -59,7 +59,7 @@ namespace TcpPeer2PeerServer
                     {
                         Console.WriteLine("Waited Client Connected");
                         endpointToGive = socket.RemoteEndPoint.ToString();
-                        byte[] messageByte = Encoding.ASCII.GetBytes("TRYCONNECT:" + clientSockets[0].RemoteEndPoint.ToString());
+                        byte[] messageByte = Encoding.ASCII.GetBytes("TRYCONNECT:" + clientSockets[0].RemoteEndPoint.ToString() + "\n" + socket.RemoteEndPoint.ToString().Split(":")[1]);
                         socket.Send(messageByte);
                         Console.WriteLine("Sending TRYCONNECT message to client");
                         socket.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, socket);
