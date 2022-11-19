@@ -12,7 +12,7 @@ namespace TcpPeer2PeerServer
         IPEndPoint localEndPoint;
         IPEndPoint remoteEndPoint;
         bool useParallelAlgorithm;
-        public HolePunching(IPEndPoint localEndPoint, string remoteEndPointstr, bool useParallelAlgorithm)
+        public HolePunching(string remoteEndPointstr, bool useParallelAlgorithm)
         {
             this.localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1234);
             this.remoteEndPoint = new IPEndPoint(IPAddress.Parse(remoteEndPointstr.Split(":")[0]), Int32.Parse(remoteEndPointstr.Split(":")[1]));
