@@ -124,14 +124,13 @@ namespace TcpPeer2Peer
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
                 ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
 
-                Peer peer = new Peer(ipLocalEndPoint, peerEndPoint, false);
-                peer.Run();
+                HolePunching();
                 while (true)
                 {
                     string newMessage = Console.ReadLine();
                     if (!String.IsNullOrEmpty(newMessage))
                     {
-                        peer.SendString(newMessage);
+
                     }
                     
                 }
