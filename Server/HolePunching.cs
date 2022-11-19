@@ -15,8 +15,6 @@ namespace TcpPeer2PeerServer
 
         public static void Run(EndPoint newRemoteEndPoint)
         {
-            var ipHostEntry = Dns.GetHostEntry("REMOTE_HOST");
-
             new HolePunching()
             {
                 localEndPoint = new IPEndPoint(IPAddress.Parse("LOCAL_IP"), 1234),
