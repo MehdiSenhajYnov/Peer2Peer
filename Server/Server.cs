@@ -67,7 +67,7 @@ namespace TcpPeer2PeerServer
                     }
                 }
                 clientSockets.Add(socket);
-                if (clientSockets.Count() >= 2){
+                if (clientSockets.Count() == 2){
                     // tell to the client to open a new TCP connection
                     byte[] messageByte = Encoding.ASCII.GetBytes("TCPNEW");
                     clientSockets[1].SendTo(messageByte, 0, messageByte.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
