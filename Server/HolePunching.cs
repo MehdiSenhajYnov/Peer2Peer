@@ -17,7 +17,7 @@ namespace TcpPeer2PeerServer
         {
             new HolePunching()
             {
-                localEndPoint = new IPEndPoint(IPAddress.Parse("LOCAL_IP"), 1234),
+                localEndPoint = new IPEndPoint(IPAddress.Parse("20.13.17.73"), 1234),
                 remoteEndPoint = (IPEndPoint)newRemoteEndPoint,
                 useParallelAlgorithm = true,
             }.RunImpl();
