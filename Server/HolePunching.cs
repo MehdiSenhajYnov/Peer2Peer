@@ -12,15 +12,16 @@ namespace TcpPeer2PeerServer
         IPEndPoint localEndPoint;
         IPEndPoint remoteEndPoint;
         bool useParallelAlgorithm;
-
-        public static void Run(EndPoint newRemoteEndPoint)
+        public HolePunching(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, bool useParallelAlgorithm)
         {
-            new HolePunching()
-            {
-                localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1234),
-                remoteEndPoint = (IPEndPoint)newRemoteEndPoint,
-                useParallelAlgorithm = true,
-            }.RunImpl();
+            this.localEndPoint = localEndPoint;
+            this.remoteEndPoint = remoteEndPoint;
+            this.useParallelAlgorithm = useParallelAlgorithm;
+        }
+
+        public void Run()
+        {
+            RunImpl();
         }
 
         void RunImpl()
