@@ -47,7 +47,7 @@ namespace TcpPeer2PeerServer
         public void AcceptCallback(IAsyncResult AR)
         {
             Socket socket;
-
+            Console.WriteLine("Accepting callback");
             try
             {
                 socket = serverSocket.EndAccept(AR);

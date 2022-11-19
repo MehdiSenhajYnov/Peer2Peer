@@ -113,7 +113,9 @@ namespace TcpPeer2Peer
             if (responseData == "TCPNEW")
             {
                 tcpClient.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
-                Console.WriteLine("TCPNEW connected");
+                if (tcpClient.Connected) {
+                    Console.WriteLine("TCPNEW connected");
+                }
             }
             if (responseData.StartsWith("TRYCONNECT:")) {
                 string InfoToConnect = responseData.Replace("TRYCONNECT:", "");
