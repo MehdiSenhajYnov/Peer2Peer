@@ -19,7 +19,7 @@ namespace TcpPeer2Peer
         public static string IpAddressEndPoint = String.Empty;
         public static int PortEndPoint = 0;
         static Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
+        public static IPEndPoint MainServerEndPoint = new IPEndPoint(IPAddress.Parse("20.13.17.73"), MainServerPort);
 
         public static void Start()
         {
@@ -39,7 +39,7 @@ namespace TcpPeer2Peer
         public static void ConnectToMainServer()
         {
             //client.Bind(new IPEndPoint(IPAddress.Any, 8888));
-            client.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
+            client.Connect(MainServerEndPoint);
             if (client.Connected) {
                 Console.WriteLine("Connected to Main Server");
             }
@@ -112,7 +112,7 @@ namespace TcpPeer2Peer
             Console.WriteLine("received : " + responseData);
             if (responseData == "TCPNEW")
             {
-                tcpClient.Connect(IPAddress.Parse("20.13.17.73"), MainServerPort);
+                tcpClient.Connect(MainServerEndPoint);
                 if (tcpClient.Connected) {
                     Console.WriteLine("TCPNEW connected");
                 }
@@ -198,41 +198,5 @@ namespace TcpPeer2Peer
             Console.WriteLine("Client connected");
         }
 
-        public static void HolePunching()
-        {
-
-            if (peerEndPoint == null)
-            {
-                peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
-            }
-            
-            Console.WriteLine("Trying to connect to: " + IpAddressEndPoint + ":" + PortEndPoint);
-            
-            if (!client.Connected) {
-                try 
-                {
-                    client.Connect(peerEndPoint);
-                }
-                catch (Exception e)
-                {
-                }
-            } else {
-                Console.WriteLine("Already connected");
-            }
-
-            if (client.Connected)
-            {
-                Console.WriteLine("Connected");
-                RequestLoop();
-                while (true)
-                {
-                    
-                }
-            } else
-            {
-                HolePunching();
-            }
-            //
-        }
     }
 }
