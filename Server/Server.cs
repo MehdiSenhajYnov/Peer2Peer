@@ -53,6 +53,7 @@ namespace TcpPeer2PeerServer
                 socket = serverSocket.EndAccept(AR);
                 if (ipWaited != string.Empty) 
                 {
+                    Console.WriteLine("IP waited: " + ipWaited + " IP connected: " + socket.RemoteEndPoint.ToString().Split(":")[0]);
                     if (socket.RemoteEndPoint.ToString().Split(":")[0] == ipWaited)
                     {
                         Console.WriteLine("Waited Client Connected");
@@ -69,7 +70,7 @@ namespace TcpPeer2PeerServer
                     byte[] messageByte = Encoding.ASCII.GetBytes("TCPNEW");
                     clientSockets[1].SendTo(messageByte, 0, messageByte.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
                     ipWaited = string.Format("{0}", socket.RemoteEndPoint.ToString()).Split(':')[0];
-
+                    Console.WriteLine("Waiting for client : " + ipWaited + "to connect to the new TCP connection" );
                     /*
                     byte[] IPPlyrOne = Encoding.ASCII.GetBytes(clientSockets[0].RemoteEndPoint.ToString() + "\n" + clientSockets[1].RemoteEndPoint.ToString().Split(':')[1]);
                     byte[] IPPlyrTwo = Encoding.ASCII.GetBytes(clientSockets[1].RemoteEndPoint.ToString() + "\n" + clientSockets[0].RemoteEndPoint.ToString().Split(':')[1]);
