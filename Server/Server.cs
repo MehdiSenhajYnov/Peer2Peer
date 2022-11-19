@@ -52,7 +52,7 @@ namespace TcpPeer2PeerServer
             {
                 socket = serverSocket.EndAccept(AR);
                 Console.WriteLine("Client connected: " + socket.RemoteEndPoint);
-                if (String.IsNullOrEmpty(ipWaited)) 
+                if (!String.IsNullOrEmpty(ipWaited)) 
                 {
                     Console.WriteLine("IP waited: " + ipWaited + " IP connected: " + socket.RemoteEndPoint.ToString().Split(":")[0]);
                     if (socket.RemoteEndPoint.ToString().Split(":")[0] == ipWaited)
