@@ -121,7 +121,7 @@ namespace TcpPeer2PeerServer
 
             if (text.StartsWith("TRYTOCONNECTEND"))
             {
-                var DataToSend = Encoding.ASCII.GetBytes("ConnectTo:" + endpointToGive);
+                var DataToSend = Encoding.ASCII.GetBytes("ConnectTo:" + endpointToGive + "\n" + clientSockets[0].RemoteEndPoint.ToString().Split(":")[1]);
                 clientSockets[0].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
                 Console.WriteLine("Sending ConnectTo message to client");
             }
