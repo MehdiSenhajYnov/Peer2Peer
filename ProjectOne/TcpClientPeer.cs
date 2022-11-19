@@ -150,7 +150,7 @@ namespace TcpPeer2Peer
             new Thread(() => 
             {
                 Thread.CurrentThread.IsBackground = true; 
-                while (client != null && client.Connected)
+                while (true)
                 {
                     PeerReceiveResponse();
                 }
