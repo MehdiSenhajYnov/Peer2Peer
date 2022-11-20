@@ -19,6 +19,7 @@ namespace TcpPeer2Peer
         public static string IpAddressEndPoint = String.Empty;
         public static int PortEndPoint = 0;
         static Socket tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        static Socket listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         public static IPEndPoint MainServerEndPoint = new IPEndPoint(IPAddress.Parse("20.13.17.73"), MainServerPort);
 
         public static void Start()
@@ -26,7 +27,9 @@ namespace TcpPeer2Peer
             // my public ip (portable pc) = "77.205.68.255"
             // other side public ip (home pc) = "176.150.133.69"
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
+            client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            tcpClient.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            listeningSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             ConnectToMainServer();
             /*
@@ -130,19 +133,26 @@ namespace TcpPeer2Peer
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
                 ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
 
-                client.Close();
-                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                client.Shutdown(SocketShutdown.Both);
+
+
                 client.Bind(ipLocalEndPoint);
                 client.Connect(peerEndPoint);
                 if (client.Connected) {
                     Console.WriteLine("Connected to other peer");
                     client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
 
+                } else {
+                    Console.WriteLine("Not Connected to other peer");
                 }
+
 
             }
 
         }
+
+
+
 
         public static void PeerRequestLoop()
         {
@@ -205,11 +215,8 @@ namespace TcpPeer2Peer
                 if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
                 {
                     Console.WriteLine("TRYCONNECT teminated");
-                    tcpClient.Close();
-                    tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    tcpClient.Bind(ipLocalEndPoint);
-                    tcpClient.Listen(5);
-                    tcpClient.BeginAccept(OnClientConnect, tcpClient);
+                    tcpClient.Listen();
+
                     client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
 
                 }
@@ -217,6 +224,24 @@ namespace TcpPeer2Peer
 
         }
 
+        public static void ConnectToOtherPeer()
+        {
+            try
+            {
+                Console.WriteLine("Trying to connect to peer:" + peerEndPoint.ToString());
+                tcpClient.Bind(ipLocalEndPoint);
+                tcpClient.Connect(peerEndPoint);
+                Console.WriteLine("Connected to other peer : " + peerEndPoint.ToString());
+                tcpClient.Send(Encoding.ASCII.GetBytes("hello i'm client"));
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error on connect to other peer : " + peerEndPoint.ToString());
+                Thread.Sleep(1000);
+                ConnectToOtherPeer();
+            }
+            
+        }
 
         public static void OnClientConnect(IAsyncResult ar)
         {
