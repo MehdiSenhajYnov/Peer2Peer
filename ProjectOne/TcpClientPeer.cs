@@ -110,14 +110,7 @@ namespace TcpPeer2Peer
             }*/
             string responseData = Encoding.ASCII.GetString(data);
             Console.WriteLine("received : " + responseData);
-            if (responseData == "TCPNEW")
-            {
-                tcpClient.Connect(MainServerEndPoint);
-                if (tcpClient.Connected) {
-                    Console.WriteLine("TCPNEW connected");
-                    PeerRequestLoop();
-                }
-            }
+
 
             if (responseData.StartsWith("ConnectTo:"))
             {
@@ -133,15 +126,25 @@ namespace TcpPeer2Peer
                 client.Close();
                 client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 client.Bind(ipLocalEndPoint);
-                client.Connect(peerEndPoint);
-                if (client.Connected) {
-                    Console.WriteLine("Connected to other peer");
-                    client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
-
-                }
-
+                ConnectToOtherPeer();
+                ConnectToOtherPeer();
             }
 
+        }
+
+        public static void ConnectToOtherPeer()
+        {
+            try
+            {
+                client.Connect(peerEndPoint);
+                Console.WriteLine("Connected to other peer");
+                client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error on connect to other peer");                
+            }
+            
         }
 
         public static void PeerRequestLoop()
