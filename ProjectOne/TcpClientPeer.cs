@@ -133,20 +133,55 @@ namespace TcpPeer2Peer
                 peerEndPoint = new IPEndPoint(IPAddress.Parse(IpAddressEndPoint), PortEndPoint);
                 ipLocalEndPoint = new IPEndPoint(IPAddress.Any, myPort);
 
-                client.Shutdown(SocketShutdown.Both);
-
-
-                client.Bind(ipLocalEndPoint);
-                client.Connect(peerEndPoint);
-                if (client.Connected) {
+                
+                tcpClient.Bind(ipLocalEndPoint);
+                Console.WriteLine("Try to connect to : " + peerEndPoint + " with port : " + myPort);
+                try
+                {
+                    tcpClient.Connect(peerEndPoint);
+                }
+                catch (System.Exception)
+                {
+                    Console.WriteLine("2nd try");
+                    try
+                    {
+                        tcpClient.Connect(peerEndPoint);
+                        
+                    }
+                    catch (System.Exception)
+                    {
+                        client.Send(Encoding.ASCII.GetBytes("PARALLEL"));
+                        
+                        new Thread(() => 
+                        {
+                            Thread.CurrentThread.IsBackground = true; 
+                            StartServer();
+                        }).Start();
+                    }
+                }
+                if (tcpClient.Connected) {
                     Console.WriteLine("Connected to other peer");
-                    client.Send(Encoding.ASCII.GetBytes("hello i'm client"));
+                    tcpClient.Send(Encoding.ASCII.GetBytes("hello i'm client"));
 
                 } else {
                     Console.WriteLine("Not Connected to other peer");
                 }
 
 
+            }
+            if (responseData.StartsWith("PARALLEL"))
+            {
+                while (true)
+                {
+                    try {
+                        tcpClient.Connect(peerEndPoint);
+                        Console.WriteLine("Connected to other peer");
+                        break;
+                    }
+                    catch (System.Exception)
+                    {
+                    }                    
+                }
             }
 
         }
@@ -212,17 +247,35 @@ namespace TcpPeer2Peer
                 tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 tcpClient.Bind(ipLocalEndPoint);
 
-                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
-                {
+                try {
+                    tcpClient.Connect(peerEndPoint);
+                } catch (System.Exception) {
                     Console.WriteLine("TRYCONNECT teminated");
-                    tcpClient.Listen();
-
                     client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
-
+                    Console.WriteLine("ipLocalEndPoint = " + ipLocalEndPoint);
+                    new Thread(() => 
+                    {
+                        Thread.CurrentThread.IsBackground = true; 
+                        StartServer();
+                    }).Start();
                 }
+
             }
 
         }
+
+        public static async void StartServer() {
+            listeningSocket.Bind(ipLocalEndPoint);
+            listeningSocket.Listen(5);
+            Console.WriteLine("Begin accepting");
+            var handler = await listeningSocket.AcceptAsync();
+            Console.WriteLine("Client ACCEPTED");
+        }
+
+
+        // why my TCP connection hole punching is not working ?
+        // i'm trying to connect to a peer with a TCP connection
+
 
         public static void ConnectToOtherPeer()
         {

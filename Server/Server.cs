@@ -125,6 +125,13 @@ namespace TcpPeer2PeerServer
                 clientSockets[0].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
                 Console.WriteLine("Sending ConnectTo message to client");
             }
+            if (text.StartsWith("PARALLEL"))
+            {
+                var DataToSend = Encoding.ASCII.GetBytes("PARALLEL");
+                clientSockets[1].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[1].LocalEndPoint);
+                clientSockets[0].SendTo(DataToSend, 0, DataToSend.Length, SocketFlags.None, clientSockets[0].LocalEndPoint);
+                Console.WriteLine("Sending PARALLEL message to client");
+            }
 
             current.BeginReceive(buffer, 0, BufferSize, SocketFlags.None, ReceiveCallback, current);
         }
