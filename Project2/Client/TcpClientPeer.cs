@@ -211,15 +211,10 @@ namespace TcpPeer2Peer
                 tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 tcpClient.Bind(ipLocalEndPoint);
 
-                try
-                {
-                    tcpClient.Connect(peerEndPoint);
-                }
-                catch (System.Exception)
+                if (!tcpClient.ConnectAsync(peerEndPoint).Wait(2000))
                 {
                     Console.WriteLine("TRYCONNECT teminated");
                     client.Send(Encoding.ASCII.GetBytes("TRYTOCONNECTEND"));
-                    Console.WriteLine("ipLocalEndPoint = " + ipLocalEndPoint);
                     new Thread(() =>
                     {
                         Thread.CurrentThread.IsBackground = true;
@@ -233,17 +228,16 @@ namespace TcpPeer2Peer
 
         public static async void StartServer()
         {
+            listeningSocket.Close();
+            listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            listeningSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            Console.WriteLine("ipLocalEndPoint = " + ipLocalEndPoint);
             listeningSocket.Bind(ipLocalEndPoint);
             listeningSocket.Listen(5);
             Console.WriteLine("Begin accepting");
             var handler = await listeningSocket.AcceptAsync();
             Console.WriteLine("Client ACCEPTED");
         }
-
-
-        // why my TCP connection hole punching is not working ?
-        // i'm trying to connect to a peer with a TCP connection
-
 
         public static void ConnectToOtherPeer()
         {
